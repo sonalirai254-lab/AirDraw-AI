@@ -1,5 +1,6 @@
 import cv2
 from modules.hand_tracker import HandTracker
+from modules.toolbar import draw_toolbar
 from modules.drawing import DrawingCanvas
 
 def main():
@@ -15,19 +16,25 @@ def main():
         frame = cv2.flip(frame, 1)
         frame, landmarks = tracker.find_hand(frame)
 
+        frame = draw_toolbar(frame)
+
         if landmarks:
             x, y = landmarks[8][1], landmarks[8][2]
-            frame = drawing.draw(frame, x, y)
+
+            if y > 80:
+                frame = drawing.draw(frame, x, y)
+
             cv2.circle(frame, (x, y), 10, (0, 0, 255), cv2.FILLED)
         else:
             drawing.reset_previous()
 
-        cv2.putText(frame, "Press C to Clear | Press Q to Quit", (20, 40),
+        cv2.putText(frame, "Press C to Clear | Press Q to Quit", (20, 470),
                     cv2.FONT_HERSHEY_SIMPLEX, 0.7, (255, 255, 255), 2)
 
         cv2.imshow("AirDraw AI", frame)
 
         key = cv2.waitKey(1) & 0xFF
+
         if key == ord("q"):
             break
         elif key == ord("c"):
