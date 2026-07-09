@@ -5,12 +5,14 @@ from modules.hand_tracker import HandTracker
 from modules.toolbar import draw_toolbar, get_selected_tool, COLORS
 from modules.drawing import DrawingCanvas
 
+
 def save_drawing(canvas):
     os.makedirs("drawings", exist_ok=True)
     filename = datetime.datetime.now().strftime("drawing_%Y%m%d_%H%M%S.png")
     path = os.path.join("drawings", filename)
     cv2.imwrite(path, canvas)
     return path
+
 
 def main():
     cap = cv2.VideoCapture(0)
@@ -41,7 +43,6 @@ def main():
                 else:
                     drawing.change_color(COLORS[selected_tool])
                     drawing.change_brush_size(8)
-
             else:
                 if y > 80:
                     frame = drawing.draw(frame, x, y)
@@ -50,21 +51,34 @@ def main():
         else:
             drawing.reset_previous()
 
-        cv2.putText(frame, f"Tool: {current_tool} | C: Clear | S: Save | Q: Quit",
-                    (20, 470), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255, 255, 255), 2)
+        cv2.putText(
+            frame,
+            f"Tool: {current_tool} | C Clear | S Save | U Undo | R Redo | Q Quit",
+            (20, 470),
+            cv2.FONT_HERSHEY_SIMPLEX,
+            0.55,
+            (255, 255, 255),
+            2
+        )
 
         cv2.imshow("AirDraw AI", frame)
 
         key = cv2.waitKey(1) & 0xFF
+
         if key == ord("q"):
             break
         elif key == ord("c"):
             drawing.clear()
         elif key == ord("s"):
             save_drawing(drawing.canvas)
+        elif key == ord("u"):
+            drawing.undo()
+        elif key == ord("r"):
+            drawing.redo()
 
     cap.release()
     cv2.destroyAllWindows()
+
 
 if __name__ == "__main__":
     main()
