@@ -1,7 +1,8 @@
 import cv2
 from modules.hand_tracker import HandTracker
-from modules.toolbar import draw_toolbar
+from modules.toolbar import draw_toolbar, get_selected_color
 from modules.drawing import DrawingCanvas
+
 
 def main():
     cap = cv2.VideoCapture(0)
@@ -21,15 +22,29 @@ def main():
         if landmarks:
             x, y = landmarks[8][1], landmarks[8][2]
 
-            if y > 80:
-                frame = drawing.draw(frame, x, y)
+            selected_color = get_selected_color(x, y)
+
+            if selected_color is not None:
+                drawing.change_color(selected_color)
+                drawing.reset_previous()
+            else:
+                if y > 80:
+                    frame = drawing.draw(frame, x, y)
 
             cv2.circle(frame, (x, y), 10, (0, 0, 255), cv2.FILLED)
+
         else:
             drawing.reset_previous()
 
-        cv2.putText(frame, "Press C to Clear | Press Q to Quit", (20, 470),
-                    cv2.FONT_HERSHEY_SIMPLEX, 0.7, (255, 255, 255), 2)
+        cv2.putText(
+            frame,
+            "Select Color from Toolbar | Press C to Clear | Press Q to Quit",
+            (20, 470),
+            cv2.FONT_HERSHEY_SIMPLEX,
+            0.6,
+            (255, 255, 255),
+            2
+        )
 
         cv2.imshow("AirDraw AI", frame)
 
@@ -42,6 +57,7 @@ def main():
 
     cap.release()
     cv2.destroyAllWindows()
+
 
 if __name__ == "__main__":
     main()
