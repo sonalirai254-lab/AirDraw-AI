@@ -11,16 +11,19 @@ COLORS = {
 
 BUTTONS = [
     ("RED", 20),
-    ("GREEN", 110),
-    ("BLUE", 200),
-    ("YELLOW", 290),
-    ("BLACK", 380),
-    ("ERASER", 470),
+    ("GREEN", 100),
+    ("BLUE", 180),
+    ("YELLOW", 260),
+    ("BLACK", 340),
+    ("ERASER", 420),
+    ("SMALL", 510),
+    ("MEDIUM", 590),
+    ("LARGE", 670),
 ]
 
 def draw_toolbar(frame):
     for name, x in BUTTONS:
-        color = COLORS[name]
+        color = COLORS.get(name, (80, 80, 80))
         cv2.rectangle(frame, (x, 10), (x + 70, 70), color, -1)
         cv2.rectangle(frame, (x, 10), (x + 70, 70), (255, 255, 255), 2)
         cv2.putText(frame, name[:3], (x + 8, 50),
